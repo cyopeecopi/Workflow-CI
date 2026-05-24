@@ -1,0 +1,10 @@
+name: wine-quality-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - mlflow
+      - scikit-learn
+      - pandas
