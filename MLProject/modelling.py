@@ -6,7 +6,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.metrics import accuracy_score, classification_report
 
 # 1. Menyiapkan Eksperimen MLflow
-mlflow.set_tracking_uri("file:./mlruns") # <-- TAMBAHKAN BARIS INI
+#mlflow.set_tracking_uri("file:./mlruns") # <-- TAMBAHKAN BARIS INI
 mlflow.set_experiment("Wine_Quality_Prediction_Basic")
 
 def run_training():
