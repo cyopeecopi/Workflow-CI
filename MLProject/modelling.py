@@ -1,3 +1,5 @@
+import os
+import shutil
 import pandas as pd
 import mlflow
 import mlflow.sklearn
@@ -5,22 +7,23 @@ from sklearn.model_selection import train_test_split
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.metrics import accuracy_score, classification_report
 
-# 1. Menyiapkan Eksperimen MLflow
-#mlflow.set_tracking_uri("file:./mlruns") # <-- TAMBAHKAN BARIS INI
-mlflow.set_experiment("Wine_Quality_Prediction_Basic")
+# 1. MATIKAN KEDUA BARIS INI AGAR TIDAK BENTROK DENGAN GITHUB ACTIONS
+# mlflow.set_tracking_uri("file:./mlruns") 
+# mlflow.set_experiment("Wine_Quality_Prediction_Basic")
 
 def run_training():
-    # 2. Mengaktifkan Autolog (Wajib untuk Kriteria Basic)
+    # 2. Mengaktifkan Autolog
     mlflow.sklearn.autolog()
     
-    with mlflow.start_run(run_name="LDA_Basic_Model"):
+    # Tambahkan parameter nested=True agar selaras dengan runner otomatis GitHub
+    with mlflow.start_run(run_name="LDA_Basic_Model", nested=True):
         print("Memuat dataset...")
-        # Sesuaikan dengan nama file CSV yang sudah ada di folder ini
-        df = pd.read_csv("wine_quality_clean.csv")
+        # Pastikan nama file CSV sesuai dengan yang ada di folder Anda
+        df = pd.read_csv("wine_quality_clean.csv") 
         
         # 3. Memisahkan fitur dan target
         X = df.drop('quality', axis=1)
-        y = df['quality'].astype(int) # Memastikan target berupa integer untuk klasifikasi
+        y = df['quality'].astype(int) 
         
         # 4. Membagi data latih dan uji (80% latih, 20% uji)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -30,21 +33,18 @@ def run_training():
         model = LinearDiscriminantAnalysis()
         model.fit(X_train, y_train)
         
-        # 6. Prediksi dan Evaluasi (opsional dicetak ke terminal karena MLflow sudah mencatatnya)
+        # 6. Prediksi dan Evaluasi
         predictions = model.predict(X_test)
         acc = accuracy_score(y_test, predictions)
         print(f"Akurasi Model: {acc:.4f}")
-        print("Pelatihan selesai. Metrik telah dicatat oleh MLflow autolog.")
+        
+        # --- 7. KODE SIMPAN DOCKER SEKARANG MASUK DI SINI (DI DALAM FUNGSI) ---
+        if os.path.exists("saved_model"):
+            shutil.rmtree("saved_model")
+
+        # Sekarang perintah ini bisa membaca variabel 'model' yang dilatih di atasnya
+        mlflow.sklearn.save_model(model, "saved_model")
+        print("Model berhasil disimpan ke folder 'saved_model' untuk Docker!")
 
 if __name__ == "__main__":
     run_training()
-
-import shutil
-import os
-
-# Hapus folder saved_model jika sudah ada dari percobaan sebelumnya
-if os.path.exists("saved_model"):
-    shutil.rmtree("saved_model")
-
-# Simpan model secara langsung agar mudah diambil oleh Docker
-mlflow.sklearn.save_model(model, "saved_model")
