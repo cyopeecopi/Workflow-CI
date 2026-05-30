@@ -1,1 +1,0 @@
-Docker Hub Repository: https://hub.docker.com/repository/docker/cyopee28/wine-model/
