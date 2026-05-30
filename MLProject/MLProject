@@ -1,7 +1,5 @@
-name: Wine_Quality_Prediction_Project
-
+name: Breast_Cancer_CI
 conda_env: conda.yaml
-
 entry_points:
   main:
     command: "python modelling.py"

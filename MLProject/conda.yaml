@@ -1,10 +1,10 @@
-name: wine-quality-env
+name: breast-cancer-env
 channels:
   - conda-forge
 dependencies:
   - python=3.10
   - pip
   - pip:
-      - mlflow
-      - scikit-learn
-      - pandas
+    - pandas
+    - scikit-learn
+    - mlflow
